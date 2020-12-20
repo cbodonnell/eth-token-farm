@@ -8,8 +8,9 @@
 # testing
 /coverage
 
-# production
+# builds
 /build
+/src/abis
 
 # misc
 .DS_Store
