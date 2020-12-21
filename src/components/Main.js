@@ -68,6 +68,12 @@ class Main extends Component {
                         </button>
                     </div>
                 </div>
+                <div>
+                    <button type="button" className="btn btn-sm"
+                    onClick={this.props.registerMDai}>Register mDai</button>
+                    <button type="button" className="btn btn-sm"
+                    onClick={this.props.registerDAAP}>Register DAAP</button>
+                </div>
             </div>
         );
     }

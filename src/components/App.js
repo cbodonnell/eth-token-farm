@@ -21,6 +21,8 @@ class App extends Component {
       stakingBalance: '0',
       loading: true
     }
+    this.registerMDai = this.registerMDai.bind(this)
+    this.registerDAPP = this.registerMDai.bind(this)
   }
 
   async componentWillMount() {
@@ -48,8 +50,10 @@ class App extends Component {
     const networkId = await web3.eth.net.getId()
 
     const daiTokenData = DaiToken.networks[networkId]
+    console.log(daiTokenData)
     if (daiTokenData) {
       const daiToken = new web3.eth.Contract(DaiToken.abi, daiTokenData.address)
+      console.log(daiToken)
       this.setState({ daiToken })
       let daiTokenBalance = await daiToken.methods.balanceOf(this.state.account).call()
       this.setState({ daiTokenBalance: daiTokenBalance.toString() })
@@ -58,8 +62,10 @@ class App extends Component {
     }
 
     const dappTokenData = DappToken.networks[networkId]
+    console.log(dappTokenData)
     if (dappTokenData) {
       const dappToken = new web3.eth.Contract(DappToken.abi, dappTokenData.address)
+      console.log(dappToken);
       this.setState({ dappToken })
       let dappTokenBalance = await dappToken.methods.balanceOf(this.state.account).call()
       this.setState({ dappTokenBalance: dappTokenBalance.toString() })
@@ -68,8 +74,10 @@ class App extends Component {
     }
 
     const tokenFarmData = TokenFarm.networks[networkId]
+    console.log(tokenFarmData)
     if (tokenFarmData) {
       const tokenFarm = new web3.eth.Contract(TokenFarm.abi, tokenFarmData.address)
+      console.log(tokenFarm)
       this.setState({ tokenFarm })
       let stakingBalance = await tokenFarm.methods.stakingBalance(this.state.account).call()
       this.setState({ stakingBalance: stakingBalance.toString() })
@@ -78,6 +86,49 @@ class App extends Component {
     }
 
     this.setState({ loading: false })
+  }
+
+  async registerToken(options) {
+    console.log('registering token', options)
+    try {
+      // wasAdded is a boolean. Like any RPC method, an error may be thrown.
+      const wasAdded = await window.ethereum.request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20', // Initially only supports ERC20, but eventually more!
+          options: {
+            address: options.address, // The address that the token is at.
+            symbol: options.symbol, // A ticker symbol or shorthand, up to 5 chars.
+            decimals: options.decimals, // The number of decimals in the token
+            // image: options.image, // A string url of the token logo
+          },
+        },
+      });
+    
+      if (wasAdded) {
+        console.log('Thanks for your interest!');
+      } else {
+        console.log('Your loss!');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async registerMDai() {
+    this.registerToken({
+      address: this.state.daiToken._address,
+      symbol: await this.state.daiToken.methods.symbol().call(),
+      decimals: await this.state.daiToken.methods.decimals().call(),
+    })
+  }
+
+  async registerDAPP() {
+    this.registerToken({
+      address: this.state.dappToken._address,
+      symbol: await this.state.dappToken.methods.symbol().call(),
+      decimals: await this.state.dappToken.methods.decimals().call(),
+    })
   }
 
   stakeTokens = (amount) => {
@@ -113,6 +164,8 @@ class App extends Component {
         stakingBalance={this.state.stakingBalance}
         stakeTokens={this.stakeTokens}
         unstakeTokens={this.unstakeTokens}
+        registerMDai={this.registerMDai}
+        registerDAPP={this.registerDAPP}
       />
     }
 
