@@ -22,7 +22,7 @@ class App extends Component {
       loading: true
     }
     this.registerMDai = this.registerMDai.bind(this)
-    this.registerDAPP = this.registerMDai.bind(this)
+    this.registerDAPP = this.registerDAPP.bind(this)
   }
 
   async componentWillMount() {
